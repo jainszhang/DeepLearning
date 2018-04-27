@@ -9,8 +9,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 class AlexNet(object):
     """Implementation of the AlexNet."""
 
-    def __init__(self, x, keep_prob, num_classes, skip_layer,
-                 weights_path='DEFAULT'):
+    def __init__(self, x, keep_prob, num_classes):
         """Create the graph of the AlexNet model.
 
         Args:
@@ -26,13 +25,8 @@ class AlexNet(object):
         self.X = x
         self.NUM_CLASSES = num_classes
         self.KEEP_PROB = keep_prob
-        self.SKIP_LAYER = skip_layer
+        # self.SKIP_LAYER = skip_layer
        # self.WEIGHTS_PATH = weights_path
-
-        if weights_path == 'DEFAULT':
-            self.WEIGHTS_PATH = 'bvlc_alexnet.npy'
-        else:
-            self.WEIGHTS_PATH = weights_path
 
         # Call the create function to build the computational graph of AlexNet
         self.create()
@@ -69,41 +63,8 @@ class AlexNet(object):
         dropout7 = dropout(fc7, self.KEEP_PROB)
 
         # 8th Layer: FC and return unscaled activations
-        self.fc8 = fc(dropout7, 4096, self.NUM_CLASSES, relu=False, name='fc8')
+        self.fc8 = fc(dropout7, 4096, self.NUM_CLASSES, relu = False,name='fc8')
 
-    def load_initial_weights(self, session):
-        """Load weights from file into network.
-
-        As the weights from http://www.cs.toronto.edu/~guerzhoy/tf_alexnet/
-        come as a dict of lists (e.g. weights['conv1'] is a list) and not as
-        dict of dicts (e.g. weights['conv1'] is a dict with keys 'weights' &
-        'biases') we need a special load function
-        """
-        # Load the weights into memory
-        weights_dict = np.load(self.WEIGHTS_PATH, encoding='bytes').item()
-        print(weights_dict)
-        # print(len(weights_dict['conv5'][0]))
-        # print(len(weights_dict['conv5'][1]))
-        # Loop over all layer names stored in the weights dict
-        for op_name in weights_dict:
-
-            # Check if layer should be trained from scratch
-            if op_name not in self.SKIP_LAYER:
-
-                with tf.variable_scope(op_name, reuse=True):
-
-                    # Assign weights/biases to their corresponding tf variable
-                    for data in weights_dict[op_name]:
-
-                        # Biases
-                        if len(data.shape) == 1:
-                            var = tf.get_variable('biases', trainable=False)
-                            session.run(var.assign(data))
-
-                        # Weights
-                        else:
-                            var = tf.get_variable('weights', trainable=False)
-                            session.run(var.assign(data))
 
 def conv(input_tensor,filter,strides,name,padding = "SAME"):
     with tf.variable_scope(name):
@@ -112,64 +73,14 @@ def conv(input_tensor,filter,strides,name,padding = "SAME"):
         conv1 = tf.nn.conv2d(input_tensor,weights,strides=strides,padding=padding)
         return tf.nn.relu(tf.nn.bias_add(conv1,biases))
 
-def max_pooling(input_tensor,filters,strides,name,padding = "SAME"):
-    with tf.variable_scope(name):
-        return tf.nn.max_pool(input_tensor,ksize=filters,strides=strides,padding=padding)
-
-#
-# def conv(x, filter_height, filter_width, num_filters, stride_y, stride_x, name,
-#          padding='SAME', groups=1):
-#     """Create a convolution layer.
-#
-#     Adapted from: https://github.com/ethereon/caffe-tensorflow
-#     """
-#     # Get number of input channels
-#     input_channels = int(x.get_shape()[-1])
-#
-#     # Create lambda function for the convolution
-#     convolve = lambda i, k: tf.nn.conv2d(i, k,
-#                                          strides=[1, stride_y, stride_x, 1],
-#                                          padding=padding)
-#
-#     with tf.variable_scope(name) as scope:
-#         # Create tf variables for the weights and biases of the conv layer
-#         weights = tf.get_variable('weights', shape=[filter_height,
-#                                                     filter_width,
-#                                                     input_channels / groups,
-#                                                     num_filters])
-#         biases = tf.get_variable('biases', shape=[num_filters])
-#
-#     if groups == 1:
-#         conv = convolve(x, weights)
-#
-#     # In the cases of multiple groups, split inputs & weights and
-#     else:
-#         # Split input and weights and convolve them separately
-#         input_groups = tf.split(axis=3, num_or_size_splits=groups, value=x)
-#         weight_groups = tf.split(axis=3, num_or_size_splits=groups,
-#                                  value=weights)
-#         output_groups = [convolve(i, k) for i, k in zip(input_groups, weight_groups)]
-#
-#         # Concat the convolved output together again
-#         conv = tf.concat(axis=3, values=output_groups)
-#
-#     # Add biases
-#     bias = tf.reshape(tf.nn.bias_add(conv, biases), tf.shape(conv))
-#
-#     # Apply relu function
-#     relu = tf.nn.relu(bias, name=scope.name)
-#
-#     return relu
-
-
 def fc(x, num_in, num_out, name, relu=True):
     """Create a fully connected layer."""
     with tf.variable_scope(name) as scope:
 
         # Create tf variables for the weights and biases
-        weights = tf.get_variable('weights', shape=[num_in, num_out],
+        weights = tf.get_variable('weights', shape=[num_in, num_out],initializer=tf.truncated_normal_initializer(stddev=0.1),
                                   trainable=True)
-        biases = tf.get_variable('biases', [num_out], trainable=True)
+        biases = tf.get_variable('biases', [num_out],initializer=tf.truncated_normal_initializer(stddev=0.1), trainable=True)
 
         # Matrix multiply weights and inputs and add bias
         act = tf.nn.xw_plus_b(x, weights, biases, name=scope.name)
