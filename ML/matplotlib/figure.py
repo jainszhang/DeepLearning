@@ -50,4 +50,7 @@ ax.yaxis.set_ticks_position('left')
 ax.spines['bottom'].set_position(('data',0))#横坐标是纵向轴的值-1------axes表示定位在多少百分位置
 ax.spines['left'].set_position(('data',0))#y轴坐标是横坐标的值0
 
+
+
+
 plt.show()
