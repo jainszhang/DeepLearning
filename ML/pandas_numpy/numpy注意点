@@ -1,0 +1,21 @@
+1.np.ravel()比np.flatten()速度快很多，同样都是对矩阵展平
+2.view比copy要快。
+    view取自索引，而copy取自复制，所以速度慢
+3.合并数组
+    使用np.concatenate比np.stack要快很多
+
+4.view与copy使用情况
+a_view1 = a[1:2, 3:6]    # 切片 slice
+a_view2 = a[:100]        # 同上
+a_view3 = a[::2]         # 跳步
+a_view4 = a.ravel()      # 上面提到了
+...                      # 我只能想到这些, 如果还有请大家在评论里提出
+
+a_copy1 = a[[1,4,6], [2,4,6]]   # 用 index 选
+a_copy2 = a[[True, True], [False, True]]  # 用 mask
+a_copy3 = a[[1,2], :]        # 虽然 1,2 的确连在一起了, 但是他们确实是 copy
+a_copy4 = a[a[1,:] != 0, :]  # fancy indexing
+a_copy5 = a[np.isnan(a), :]  # fancy indexing
+...                          # 我只能想到这些, 如果还有请大家在评论里提出
+
+5.最好直接使用np.add,np.mul等等函数，而不是直接加上
