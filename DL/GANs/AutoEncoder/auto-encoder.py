@@ -13,16 +13,13 @@ epoch = 100
 
 def vis_img(samples,epoch):
     fig, axes = plt.subplots(figsize=(7,7),nrows=8, ncols=8, sharey=True, sharex=True)
-
-    #
     for ax, img in zip(axes.flatten(), samples):
-        # img = np.array(img.reshape(28,28,1))
         ax.xaxis.set_visible(False)
         ax.yaxis.set_visible(False)
-        ax.imshow(img.reshape((28, 28)),cmap='Greys_r')
+        ax.imshow(img.reshape((28, 28)),cmap='Greys_r')#注意此处，灰度图像不能写成(28,28,1)不然会出错
 
     image = 'img/'+str(epoch)+'.jpg'
-    plt.savefig(image)
+    plt.savefig(image)#把显示的图像保存成图片到本地
     # plt.show()
 
     return fig, axes
@@ -59,7 +56,7 @@ x = tf.placeholder(dtype=tf.float32,shape=[None,784],name='input')
 enc = encoder(x)
 dec = decoder(enc)
 
-loss = tf.reduce_mean(tf.pow(x - dec,2))
+loss = tf.reduce_mean(tf.pow(x - dec,2))#loss为生成图片与实际图像之间像素差值平方
 train_op = tf.train.AdamOptimizer(0.0001).minimize(loss)
 
 all_loss = []
@@ -77,7 +74,7 @@ with tf.Session() as sess:
                 print("epoche is %d ---  step is %d   losses is %f"%(e,step,losses))
                 all_loss.append(losses)
 
-        out = ((out - out.min()) * 255 / (out.max() - out.min())).astype(np.uint8)
+        out = ((out - out.min()) * 255 / (out.max() - out.min())).astype(np.uint8)#把原来归一化后的图片转化成可以显示的图片
         vis_img(out, e)
 
 
