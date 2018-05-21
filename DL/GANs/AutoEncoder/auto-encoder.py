@@ -9,7 +9,7 @@ mnist = input_data.read_data_sets('../data_set/MNIST_data/',one_hot = True)
 
 batch_size = 64
 train_num = 1000
-epoch = 100
+epoch = 200
 
 def vis_img(samples,epoch):
     fig, axes = plt.subplots(figsize=(7,7),nrows=8, ncols=8, sharey=True, sharex=True)
@@ -31,26 +31,32 @@ def vis_img(samples,epoch):
 
 
 def encoder(inputs):
-    fc1_weights = tf.get_variable('weight', [784, 256], initializer=tf.truncated_normal_initializer(stddev=0.1))
-    fc1_biases = tf.get_variable('bias', [256], initializer=tf.constant_initializer(0.1))
-    e_layer1 = tf.nn.relu(tf.matmul(inputs, fc1_weights) + fc1_biases)
+    e_layer1 = tf.layers.dense(inputs=inputs,units=256,kernel_initializer=tf.truncated_normal_initializer(stddev=0.1),
+                               bias_initializer=tf.constant_initializer(0.1),name='e_layer1')
+    # fc1_weights = tf.get_variable('weight', [784, 256], initializer=tf.truncated_normal_initializer(stddev=0.1))
+    # fc1_biases = tf.get_variable('bias', [256], initializer=tf.constant_initializer(0.1))
+    # e_layer1 = tf.nn.relu(tf.matmul(inputs, fc1_weights) + fc1_biases)
 
-
-    fc2_weights = tf.get_variable('weight2', [256, 128], initializer=tf.truncated_normal_initializer(stddev=0.1))
-    fc2_biases = tf.get_variable('bias2', [128], initializer=tf.constant_initializer(0.1))
-    e_layer2 = tf.nn.relu(tf.matmul(e_layer1, fc2_weights) + fc2_biases)
+    e_layer2 = tf.layers.dense(inputs=e_layer1,units=128,kernel_initializer=tf.truncated_normal_initializer(stddev=0.1),
+                               bias_initializer=tf.constant_initializer(0.1),name='e_layer2')
+    # fc2_weights = tf.get_variable('weight2', [256, 128], initializer=tf.truncated_normal_initializer(stddev=0.1))
+    # fc2_biases = tf.get_variable('bias2', [128], initializer=tf.constant_initializer(0.1))
+    # e_layer2 = tf.nn.relu(tf.matmul(e_layer1, fc2_weights) + fc2_biases)
 
     return tf.nn.sigmoid(e_layer2)
 
 def decoder(inputs):
+    d_layer1 = tf.layers.dense(inputs=inputs,units=256,kernel_initializer=tf.truncated_normal_initializer(stddev=0.1),
+                               bias_initializer=tf.constant_initializer(0.1),name='d_layer1')
+    # fc1_weights = tf.get_variable('d_weight', [128, 256], initializer=tf.truncated_normal_initializer(stddev=0.1))
+    # fc1_biases = tf.get_variable('d_bias', [256], initializer=tf.constant_initializer(0.1))
+    # d_layer1 = tf.nn.relu(tf.matmul(inputs, fc1_weights) + fc1_biases)
 
-    fc1_weights = tf.get_variable('d_weight', [128, 256], initializer=tf.truncated_normal_initializer(stddev=0.1))
-    fc1_biases = tf.get_variable('d_bias', [256], initializer=tf.constant_initializer(0.1))
-    d_layer1 = tf.nn.relu(tf.matmul(inputs, fc1_weights) + fc1_biases)
-
-    fc2_weights = tf.get_variable('d_weight2', [256, 784], initializer=tf.truncated_normal_initializer(stddev=0.1))
-    fc2_biases = tf.get_variable('d_bias2', [784], initializer=tf.constant_initializer(0.1))
-    d_layer2 = tf.nn.relu(tf.matmul(d_layer1, fc2_weights) + fc2_biases)
+    d_layer2 = tf.layers.dense(inputs=d_layer1,units=784,kernel_initializer=tf.truncated_normal_initializer(stddev=0.1),#注意units是全连接层的点数，而非全部点数
+                               bias_initializer=tf.constant_initializer(0.1),name='d_layer2')
+    # fc2_weights = tf.get_variable('d_weight2', [256, 784], initializer=tf.truncated_normal_initializer(stddev=0.1))
+    # fc2_biases = tf.get_variable('d_bias2', [784], initializer=tf.constant_initializer(0.1))
+    # d_layer2 = tf.nn.relu(tf.matmul(d_layer1, fc2_weights) + fc2_biases)
     return tf.nn.sigmoid(d_layer2)
 
 x = tf.placeholder(dtype=tf.float32,shape=[None,784],name='input')
@@ -80,7 +86,8 @@ with tf.Session() as sess:
         out = ((out - out.min()) * 255 / (out.max() - out.min())).astype(np.uint8)
         vis_img(out, e)
 
-
+    plt.figure()
     plt.plot(all_loss)
-    img_name = '1.jpg'
-    plt.savefig(img_name)
+    img_name1 = '1.jpg'
+    # plt.show()
+    plt.savefig(img_name1)
