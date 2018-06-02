@@ -1,0 +1,4 @@
+reboot--重启
+halt--关机
+
+查看文件：more/less filename, cat/tac filename, head/tail filename
