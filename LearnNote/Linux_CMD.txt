@@ -1,4 +1,26 @@
 reboot--重启
 halt--关机
 
+
+程序操作
+ctrl + z:后台挂起
+ctrl + c:结束前台进程
+jobs:查看后台运行的程序
+fg %id:把相应后台暂停任务拉回前台
+bg %id:把前台任务暂停放到后台
+top:查看所有进程
+ps：查看当前任务
+kill -9 pid:杀死进程
+killall -9 threadname:杀死进程所有相关线程
+
+
+
+文件相关
+touch filename:创建文件
+cat/tac filename
+more/less filename
+head/tail
+nl:显示输出行号
+
+
 查看文件：more/less filename, cat/tac filename, head/tail filename
