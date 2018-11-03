@@ -1,0 +1,14 @@
+Metadata-Version: 1.0
+Name: scatwave
+Version: 0.0.1
+Summary: Fast CPU/CUDA Scattering implementation
+Home-page: https://github.com/edouardoyallon/pyscatwave
+Author: Edouard Oyallon, Eugene Belilovsky, Sergey Zagoruyko
+Author-email: edouard.oyallon@ens.fr, eugene.belilovsky@inria.fr, sergey.zagoruyko@enpc.fr
+License: BSD
+Description: 
+        Fast CPU/CUDA Scattering implementation
+        
+        CuPy/PyTorch CUDA and NumPy/PyTorch CUDA implementation
+        
+Platform: UNKNOWN
