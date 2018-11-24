@@ -24,7 +24,7 @@ from torchvision.utils import save_image
 
 class GSN:
     def __init__(self, parameters):
-        dir_datasets = os.path.expanduser('./datasets')#存储数据集
+        dir_datasets = os.path.expanduser('/Users/jains/datasets/gsndatasets')#存储数据集
         dir_experiments = os.path.expanduser('./experiments')#存储模型
 
         dataset = parameters['dataset']
@@ -43,10 +43,10 @@ class GSN:
         self.dir_z_train = os.path.join(dir_datasets, dataset, '{0}_{1}'.format(train_attribute, embedding_attribute))
         self.dir_z_test = os.path.join(dir_datasets, dataset, '{0}_{1}'.format(test_attribute, embedding_attribute))
 
-        self.dir_z_train = '/home/jains/datasets/gsn/celebA_128/65536_ScatJ4_projected512_1norm'
-        self.dir_x_train = '/home/jains/datasets/gsn/celebA_128/65536'
-        self.dir_z_test = '/home/jains/datasets/gsn/celebA_128/65536_ScatJ4_projected512_1norm'
-        self.dir_x_test = '/home/jains/datasets/gsn/celebA_128/65536'
+        # self.dir_z_train = '/home/jains/datasets/gsn/celebA_128/65536_ScatJ4_projected512_1norm'
+        # self.dir_x_train = '/home/jains/datasets/gsn/celebA_128/65536'
+        # self.dir_z_test = '/home/jains/datasets/gsn/celebA_128/65536_ScatJ4_projected512_1norm'
+        # self.dir_x_test = '/home/jains/datasets/gsn/celebA_128/65536'
 
         self.dir_experiment = os.path.join(dir_experiments, 'gsn_hf', name_experiment)
         self.dir_models = os.path.join(self.dir_experiment, 'models')
@@ -301,3 +301,21 @@ def create_path(nb_samples):
             batch_z = np.vstack((batch_z, zt))
 
     return batch_z
+
+
+
+from utils import create_name_experiment
+# from GSN import GSN
+
+parameters = dict()
+parameters['dataset'] = 'celebA_128'
+parameters['train_attribute'] = '65536'
+parameters['test_attribute'] = '2048_after_65536'
+parameters['dim'] = 512
+parameters['embedding_attribute'] = 'ScatJ4_projected{}_1norm'.format(parameters['dim'])
+parameters['nb_channels_first_layer'] = 32
+
+parameters['name_experiment'] = create_name_experiment(parameters, 'NormL1')
+# print (parameters['name_experiment'])
+gsn = GSN(parameters)
+gsn.train()
