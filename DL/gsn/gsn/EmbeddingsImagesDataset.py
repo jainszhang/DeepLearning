@@ -24,10 +24,17 @@ class EmbeddingsImagesDataset(Dataset):
         return self.nb_files
 
     def __getitem__(self, idx):
-        filename = os.path.join(self.dir_z, '{}.npy'.format(idx))#获取z的文件名
-        z = np.load(filename)#加载.npy文件
+        '''原始代码如下'''
+        # filename = os.path.join(self.dir_z, '{}.npy'.format(idx))#获取z的文件名
+        # z = np.load(filename)#加载.npy文件
+        # filename = os.path.join(self.dir_x, '{}.jpg'.format(idx))#获取图片x的文件名
 
-        filename = os.path.join(self.dir_x, '{}.jpg'.format(idx))#获取图片x的文件名
+        '''修改后代码如下'''
+        filelist = os.listdir(self.dir_z)#列出z的文件夹名
+        filename = os.path.join(self.dir_z,filelist[idx])#z的文件名
+        z = np.load(filename)#加载数据z
+        filelist1 = os.listdir(self.dir_x)#列出x的文件夹名
+        filename = os.path.join(self.dir_x,filelist1[idx])#x的文件名
         if self.nb_channels == 3:
             x = (np.ascontiguousarray(Image.open(filename), dtype=np.uint8).transpose((2, 0, 1)) / 127.5) - 1.0#三通道情况处理，全部除127.5 - 1
         else:

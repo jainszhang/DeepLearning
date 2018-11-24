@@ -1,32 +1,30 @@
 ﻿# -*- coding=utf-8 -*-
 
-# from scatwave.scattering import Scattering
+from scatwave.scattering import Scattering
 import torch
-
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import torchvision
 from torch.autograd import Variable
 import torchvision.transforms as transforms
 import torchvision.datasets
-
 import os
 from PIL import Image
 import numpy as np
 import face_recognition#the recognize face package
-
+import scipy.io as sio
 import sklearn
 from sklearn.decomposition import PCA
 
 
 def cut_celeba_face():
-    list = os.listdir('/Users/jains/datasets/img_align_celeba/')
+    list = os.listdir('./../datasets/img_align_celeba/')
 
     WIDTH = 128#the aim dim
     HIGHT = 128
 
-    for i in range(0, 100):
-        imgName = os.path.join('/Users/jains/datasets/img_align_celeba/', os.path.basename(list[i]))
+    for i in range(0, len(list)):
+        imgName = os.path.join('./../datasets/img_align_celeba/', os.path.basename(list[i]))
         fileName = os.path.basename(list[i])
         # print imgName
         if (os.path.splitext(imgName)[1] != '.jpg'): continue
@@ -64,8 +62,8 @@ def cut_celeba_face():
             #translate into PIL data
             pil_image = Image.fromarray(face_image)
             pil_image = pil_image.resize((128,128))#resize to the fixed dim images
-            pil_image.save('/Users/jains/datasets/face/%s'%fileName)#save the faces
-        if i%10 == 0:
+            pil_image.save('./../datasets/face/%s'%fileName)#save the faces
+        if i%100 == 0:
             print('the number of images is {}'.format(i))
 
 def resize_face():
@@ -82,9 +80,11 @@ def resize_face():
 
 
 def scat_data(data_dir,outdata_dir,M,N,J):
+
     filename_list = os.listdir(data_dir)#read the directory files's name
+    number = len(filename_list)
     scat = Scattering(M=M, N=N, J=J).cuda()  # scattering transform
-    for i in range(0,len(filename_list)):
+    for i in range(0,number):
         imgName = os.path.join(data_dir, os.path.basename(filename_list[i]))
         if (os.path.splitext(imgName)[1] != '.jpg'): continue
         # img = np.array(Image.open(imgName)) / 255.
@@ -95,10 +95,12 @@ def scat_data(data_dir,outdata_dir,M,N,J):
         out_data = np.array(scat(img_data))
         # print out_data.shape
         str1 = filename_list[i].split('.')
+        # print (outdata_dir + str1[0] + '.npy')
         np.save(outdata_dir + str1[0] + '.npy',out_data)
+
         if i%100 ==0:
             print ("step is %d",i)
-
+# /home/jains/datasets/celebA/Scat_J4
 
 def PCA_example():
     import matplotlib.pyplot as plt
@@ -135,28 +137,40 @@ def PCA_example():
     plt.scatter(green_x, green_y, c='g', marker='.')
     plt.show()
 
-
 def pca_data(data_dir):
     filename_list = os.listdir(data_dir)  # read the directory files's name
+    number = len(filename_list)
     alldata = []
     for i in range (len(filename_list)):
+
         tmp = np.load(data_dir+filename_list[i])
+#        tmp = np.array(sio.loadmat(data_dir+filename_list[i])['buf'])
+
         alldata.append(tmp)
-        print ("append step %d"%i)
+        # print ("append step %d"%i)
+
+        # if (i+1)%10000 == 0 :
+
     alldata = np.array(alldata)
-    alldata = alldata.reshape(len(alldata),-1)
+    alldata = alldata.reshape(len(alldata), -1)
 
-    pca = PCA(n_components=512,copy=True, whiten=True, svd_solver='randomized')
+    pca = PCA(n_components=512, copy=True, whiten=True, svd_solver='randomized')
     X = pca.fit_transform(alldata)
-    # np.save('10000.npy',X)
 
-    for i in range(len(filename_list)):
-        np.save('./datasets/celebA_128/ScatJ4_projected512_1norm/'+ os.path.splitext(filename_list[i])[0] + '.npy',X[i])
-        print ("step is %d"%i)
-
-
+    for i in range(number):
+        str1 = filename_list[i].split('.')
+        np.save('/home/jains/datasets/gsndatasets/celebA_128_1k/65536_ScatJ4_projected512_1norm/' + str1[0] + '.npy', X[i])
+            # alldata = []
 
 
+
+def make_norm_data(data_dir):
+    # filename_list = os.listdir(data_dir)
+    for i in range(1,8):
+        tmp = np.load('/home/jains/datasets/celebA/' + str(i) +'.npy')
+        for j in range(len(tmp)):
+            np.save('/home/jains/datasets/gsn/celebA_128/65536_ScatJ4_projected512_1norm/' + str(10000 * (i - 1) + j) + '.npy', tmp[j])
+            print ("j is %d,i is %d"%(j,i))
 
 
 
@@ -182,16 +196,36 @@ def pca_data(data_dir):
     # new_data = pca.fit_transform(data)
     # print new_data.shape
 
-inputdata_dir = './datasets/celebA/256/'
-outputdata_dir = './datasets/celebA/256_ScatJ4/'
+
+
+def choose_img(src_dir,out_dir,num):
+    filename_list = os.listdir(src_dir)  # read the directory files's name
+    for i in range(num):
+        imgName = os.path.join(src_dir, os.path.basename(filename_list[i]))
+        if (os.path.splitext(imgName)[1] != '.jpg'): continue
+        img = Image.open(imgName)
+
+        img.save(out_dir + filename_list[i])
+        print ("step is %d k",i/1000)
+
+
+
+inputdata_dir = '/home/jains/datasets/gsndatasets/celebA_128_1k/65536'
+outputdata_dir = '/home/jains/datasets/gsndatasets/celebA_128_1k/65536_scat/'
+
+
+# outimg_dir = '/home/jains/datasets/gsn/celebA_128/65536/'
 M = 128;N = 128;J = 4
 
 
+
+
+#函数调用
 # scat_data(inputdata_dir,outputdata_dir,M,N,J)
-
-# pca_data('./datasets/celebA_128/128_ScatJ4/')
-
-
+pca_data(outputdata_dir)
+# make_norm_data(outputdata_dir)
+# cut_celeba_face()
+# choose_img(inputdata_dir,outimg_dir,number)
 
 
 def pca_mnist():
@@ -219,7 +253,7 @@ def pca_mnist():
 
 
 
-cut_celeba_face()
+
 
 
 # img_data = np.array(img_data)

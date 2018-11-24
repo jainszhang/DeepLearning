@@ -64,8 +64,8 @@ class GSN:
         dataloader = DataLoader(dataset=dataset,batch_size=self.batch_size,shuffle=True,num_workers=4,pin_memory=True)
 
         fixed_dataloader = DataLoader(dataset,16)#选取16个作为验证集，测试验证数据
-        print(iter(fixed_dataloader))
-        fixed_batch = next(iter(fixed_dataloader))
+
+        fixed_batch = next(iter(fixed_dataloader))#所有值/127.5 - 1
 
         criterion = torch.nn.L1Loss()#定义损失函数
 

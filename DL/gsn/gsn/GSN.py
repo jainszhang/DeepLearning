@@ -24,9 +24,9 @@ from torchvision.utils import save_image
 
 class GSN:
     def __init__(self, parameters):
-        dir_datasets = os.path.expanduser('/Users/jains/datasets/gsndatasets')#存储数据集
+        dir_datasets = os.path.expanduser('/home/jains/datasets/gsndatasets')#存储数据集
         dir_experiments = os.path.expanduser('./experiments')#存储模型
-
+        # / home / jains / Project - Zhang / gsn / experiments / gsn_hf / celebA_128_1w_65536_2048_after_65536_ScatJ4_projected512_1norm_ncfl32_NormL1 / models
         dataset = parameters['dataset']
         train_attribute = parameters['train_attribute']
         test_attribute = parameters['test_attribute']
@@ -43,24 +43,15 @@ class GSN:
         self.dir_z_train = os.path.join(dir_datasets, dataset, '{0}_{1}'.format(train_attribute, embedding_attribute))
         self.dir_z_test = os.path.join(dir_datasets, dataset, '{0}_{1}'.format(test_attribute, embedding_attribute))
 
-        # self.dir_z_train = '/home/jains/datasets/gsn/celebA_128/65536_ScatJ4_projected512_1norm'
-        # self.dir_x_train = '/home/jains/datasets/gsn/celebA_128/65536'
-        # self.dir_z_test = '/home/jains/datasets/gsn/celebA_128/65536_ScatJ4_projected512_1norm'
-        # self.dir_x_test = '/home/jains/datasets/gsn/celebA_128/65536'
-
         self.dir_experiment = os.path.join(dir_experiments, 'gsn_hf', name_experiment)
         self.dir_models = os.path.join(self.dir_experiment, 'models')
         self.dir_logs = os.path.join(self.dir_experiment, 'logs')
         create_folder(self.dir_models)
         create_folder(self.dir_logs)
 
-        self.batch_size = 32#128
+        self.batch_size = 128
         self.nb_epochs_to_save = 1
 
-        print ('dim: {}, nb_channels_first_layer: {}, dir_x_train: {},dir_x_test: {},dir_z_train: {},dir_z_test: {}'.format(
-            self.dim,self.nb_channels_first_layer,self.dir_x_train,self.dir_x_test,self.dir_z_train,self.dir_z_test))
-        print ( 'dir_models: {}, dir_logs: {}'.format(self.dir_models, self.dir_logs))
-        print ('name_experiment:{},dir_experiment:{}'.format(name_experiment,self.dir_experiment))
 
     def train(self, epoch_to_restore=0):
         g = Generator(self.nb_channels_first_layer, self.dim)
@@ -73,8 +64,9 @@ class GSN:
 
         g.cuda()
         g.train()
-
-        print self.dir_x_train,self.dir_z_train
+        print("--------------------------------")
+        print self.dir_x_train
+        print self.dir_z_train
         dataset = EmbeddingsImagesDataset(self.dir_z_train, self.dir_x_train)
         dataloader = DataLoader(dataset, self.batch_size, shuffle=True, num_workers=4, pin_memory=True)
 
@@ -107,11 +99,15 @@ class GSN:
                         optimizer.step()
 
                     writer.add_scalar('train_loss', loss, epoch)
+                    print("loss is %f ",np.float(loss.cpu()))
 
                 z = Variable(fixed_batch['z']).type(torch.FloatTensor).cuda()
                 g.eval()
                 g_z = g.forward(z)
                 images = make_grid(g_z.data[:16], nrow=4, normalize=True)
+
+                images_tmp = images.cpu().numpy().transpose((1, 2, 0))
+                Image.fromarray(np.uint8((images_tmp + 1)*127.5)).save('/home/jains/test/'+str(epoch) + '.jpg')
 
 
                 writer.add_image('generations', images, epoch)
@@ -167,7 +163,7 @@ class GSN:
             print('Error for {}: {}'.format(train_test, error))
 
         _compute_error(self.dir_z_train, self.dir_x_train, 'train')
-        # _compute_error(self.dir_z_test, self.dir_x_test, 'test')#自己注释的
+        _compute_error(self.dir_z_test, self.dir_x_test, 'test')#自己注释的
 
     def generate_from_model(self, epoch):
         filename_model = os.path.join(self.dir_models, 'epoch_{}.pth'.format(epoch))
@@ -176,8 +172,8 @@ class GSN:
         g.cuda()
         g.eval()
 
-        self.dir_z_train = '/home/jains/datasets/gsn/celebA_128/65536_ScatJ4_projected512_1norm'
-        self.dir_x_train = '/home/jains/datasets/gsn/celebA_128/65536'
+        # self.dir_z_train = '/home/jains/datasets/gsndatasets/celebA_128_1w/65536_ScatJ4_projected512_1norm'
+        # self.dir_x_train = '/home/jains/datasets/gsndatasets/celebA_128_1w/65536'
 
         def _generate_from_model(dir_z, dir_x, train_test):
             dataset = EmbeddingsImagesDataset(dir_z, dir_x)
@@ -303,12 +299,10 @@ def create_path(nb_samples):
     return batch_z
 
 
-
 from utils import create_name_experiment
-# from GSN import GSN
 
 parameters = dict()
-parameters['dataset'] = 'celebA_128'
+parameters['dataset'] = 'celebA_128_1k'
 parameters['train_attribute'] = '65536'
 parameters['test_attribute'] = '2048_after_65536'
 parameters['dim'] = 512
@@ -318,4 +312,6 @@ parameters['nb_channels_first_layer'] = 32
 parameters['name_experiment'] = create_name_experiment(parameters, 'NormL1')
 # print (parameters['name_experiment'])
 gsn = GSN(parameters)
-gsn.train()
+gsn.train(92)
+# gsn.save_originals()
+# gsn.generate_from_model(100)
