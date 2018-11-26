@@ -2,10 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="131c6129-a322-4202-93e9-336c122d923e" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/ML/sklearn/PCA/IncrementalPCA.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ML/sklearn/PCA/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ML/sklearn/PCA/pca_lda_fa.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DL/gsn/gsn/EmbeddingsImagesDataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/DL/gsn/gsn/EmbeddingsImagesDataset.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DL/gsn/gsn/GSN_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/DL/gsn/gsn/GSN_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DL/torch_net" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -14,7 +14,9 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/LearnDM$test__1_.coverage" NAME="test (1) Coverage Results" MODIFIED="1543242536039" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ML/sklearn/PCA" />
     <SUITE FILE_PATH="coverage/LearnDM$GSN_test.coverage" NAME="GSN_test Coverage Results" MODIFIED="1543070887643" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DL/gsn/gsn" />
+    <SUITE FILE_PATH="coverage/LearnDM$IncrementalPCA.coverage" NAME="IncrementalPCA Coverage Results" MODIFIED="1543243681476" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ML/sklearn/PCA" />
     <SUITE FILE_PATH="coverage/LearnDM$test.coverage" NAME="test Coverage Results" MODIFIED="1541236247657" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DL/gsn/gsn" />
     <SUITE FILE_PATH="coverage/LearnDM$loger.coverage" NAME="loger Coverage Results" MODIFIED="1543040552255" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DL/gsn" />
     <SUITE FILE_PATH="coverage/LearnDM$GSN.coverage" NAME="GSN Coverage Results" MODIFIED="1542980842072" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DL/gsn/gsn" />
@@ -27,8 +29,8 @@
             <file pinned="false" current-in-tab="true">
               <entry file="file://$PROJECT_DIR$/DL/gsn/gsn/GSN.py">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="447">
-                    <caret line="115" selection-start-line="115" selection-end-line="118" selection-end-column="52" />
+                  <state relative-caret-position="387">
+                    <caret line="111" selection-start-line="111" selection-end-line="111" />
                     <folding>
                       <element signature="e#72#81#0" expanded="true" />
                     </folding>
@@ -45,11 +47,12 @@
     <session id="191847102">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="8" />
+          <entry key="project.closed" value="9" />
           <entry key="project.open.time.2" value="1" />
-          <entry key="project.open.time.5" value="3" />
+          <entry key="project.open.time.5" value="4" />
           <entry key="project.open.time.6" value="4" />
-          <entry key="project.opened" value="8" />
+          <entry key="project.open.time.8" value="1" />
+          <entry key="project.opened" value="10" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -57,7 +60,7 @@
           <entry key="md" value="1" />
           <entry key="pt" value="1" />
           <entry key="pth" value="1" />
-          <entry key="py" value="44" />
+          <entry key="py" value="49" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
@@ -65,20 +68,20 @@
           <entry key="Chameleon" value="1" />
           <entry key="Markdown" value="1" />
           <entry key="PLAIN_TEXT" value="1" />
-          <entry key="Python" value="44" />
+          <entry key="Python" value="49" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="dummy" value="12" />
-          <entry key="py" value="4910" />
+          <entry key="dummy" value="32" />
+          <entry key="py" value="7416" />
           <entry key="txt" value="11" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="PLAIN_TEXT" value="23" />
-          <entry key="Python" value="4910" />
+          <entry key="PLAIN_TEXT" value="43" />
+          <entry key="Python" value="7416" />
         </counts>
       </usages-collector>
     </session>
@@ -88,24 +91,26 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/DL/gsn/gsn/GSN_test.py">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ML/sklearn/PCA/pca_lda_fa.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="292">
-              <caret line="87" column="44" lean-forward="true" selection-start-line="87" selection-start-column="44" selection-end-line="87" selection-end-column="44" />
+            <state relative-caret-position="1329">
+              <caret line="134" column="48" lean-forward="true" selection-start-line="134" selection-start-column="48" selection-end-line="134" selection-end-column="48" />
               <folding>
-                <element signature="e#15#24#0" expanded="true" />
-                <marker date="1543065860066" expanded="true" signature="448:453" ph="..." />
+                <marker date="1543242792001" expanded="true" signature="2228:2233" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DL/gsn/gsn/utils.py">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/ML/sklearn/PCA/IncrementalPCA.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="285">
-              <caret line="20" column="26" selection-start-line="20" selection-start-column="26" selection-end-line="20" selection-end-column="26" />
+            <state relative-caret-position="150">
+              <caret line="10" column="3" lean-forward="true" selection-start-line="10" selection-start-column="3" selection-end-line="10" selection-end-column="3" />
+              <folding>
+                <element signature="e#373#391#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -132,6 +137,10 @@
         <option value="$PROJECT_DIR$/DL/gsn/gsn/utils.py" />
         <option value="$PROJECT_DIR$/DL/gsn/gsn/EmbeddingsImagesDataset.py" />
         <option value="$PROJECT_DIR$/DL/gsn/gsn/GSN_test.py" />
+        <option value="$PROJECT_DIR$/ML/sklearn/PCA/test.py" />
+        <option value="$PROJECT_DIR$/ML/sklearn/PCA/pca_vs_lda.py" />
+        <option value="$PROJECT_DIR$/ML/sklearn/PCA/pca_lda_fa.py" />
+        <option value="$PROJECT_DIR$/ML/sklearn/PCA/IncrementalPCA.py" />
       </list>
     </option>
   </component>
@@ -141,16 +150,21 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="578" />
     <option name="y" value="23" />
     <option name="width" value="1440" />
     <option name="height" value="829" />
+  </component>
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -161,32 +175,25 @@
             <path>
               <item name="LearnDM" type="b2602c69:ProjectViewProjectNode" />
               <item name="LearnDM" type="462c0819:PsiDirectoryNode" />
-              <item name="DL" type="462c0819:PsiDirectoryNode" />
+              <item name="ML" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="LearnDM" type="b2602c69:ProjectViewProjectNode" />
               <item name="LearnDM" type="462c0819:PsiDirectoryNode" />
-              <item name="DL" type="462c0819:PsiDirectoryNode" />
-              <item name="gsn" type="462c0819:PsiDirectoryNode" />
+              <item name="ML" type="462c0819:PsiDirectoryNode" />
+              <item name="sklearn" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="LearnDM" type="b2602c69:ProjectViewProjectNode" />
               <item name="LearnDM" type="462c0819:PsiDirectoryNode" />
-              <item name="DL" type="462c0819:PsiDirectoryNode" />
-              <item name="gsn" type="462c0819:PsiDirectoryNode" />
-              <item name="gsn" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="LearnDM" type="b2602c69:ProjectViewProjectNode" />
-              <item name="LearnDM" type="462c0819:PsiDirectoryNode" />
-              <item name="DL" type="462c0819:PsiDirectoryNode" />
-              <item name="torch_practice" type="462c0819:PsiDirectoryNode" />
+              <item name="ML" type="462c0819:PsiDirectoryNode" />
+              <item name="sklearn" type="462c0819:PsiDirectoryNode" />
+              <item name="PCA" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -213,7 +220,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.GSN_test">
+  <component name="RunManager" selected="Python.IncrementalPCA">
     <configuration name="GSN" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="LearnDM" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -258,6 +265,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="IncrementalPCA" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="LearnDM" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ML/sklearn/PCA" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ML/sklearn/PCA/IncrementalPCA.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="loger" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="LearnDM" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -280,7 +309,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="test (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="LearnDM" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -288,12 +317,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/DL/gsn/gsn" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ML/sklearn/PCA" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/DL/gsn/gsn/test.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ML/sklearn/PCA/pca_lda_fa.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -303,17 +332,19 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.test" />
       <item itemvalue="Python.GSN" />
       <item itemvalue="Python.GSN_test" />
       <item itemvalue="Python.loger" />
+      <item itemvalue="Python.test (1)" />
+      <item itemvalue="Python.IncrementalPCA" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.IncrementalPCA" />
+        <item itemvalue="Python.test (1)" />
         <item itemvalue="Python.GSN_test" />
         <item itemvalue="Python.loger" />
         <item itemvalue="Python.GSN" />
-        <item itemvalue="Python.test" />
       </list>
     </recent_temporary>
   </component>
@@ -355,8 +386,8 @@
       <window_info id="Favorites" order="2" sideWeight="0.5020243" side_tool="true" weight="0.17596567" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4985694" weight="0.32880434" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.63662374" weight="0.21899736" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4985694" visible="true" weight="0.28496042" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.63662374" weight="0.3469657" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49928468" weight="0.32880434" />
@@ -369,7 +400,7 @@
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="SciView" order="3" />
+      <window_info anchor="right" x="369" y="197" width="648" height="624" id="SciView" order="3" show_stripe_button="false" type="FLOATING" weight="0.3298611" />
       <window_info anchor="right" id="Database" order="4" />
     </layout>
   </component>
@@ -414,13 +445,18 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/DL/gsn/gsn/test.py</url>
-          <line>22</line>
+          <line>20</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/DL/gsn/gsn/GSN_test.py</url>
           <line>97</line>
           <option name="timeStamp" value="25" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/ML/sklearn/PCA/pca_lda_fa.py</url>
+          <line>120</line>
+          <option name="timeStamp" value="34" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -434,14 +470,19 @@
         </breakpoint>
       </default-breakpoints>
     </breakpoint-manager>
-    <watches-manager>
-      <configuration name="PythonConfigurationType">
-        <watch expression="self.dir_z_train" language="Python" />
-      </configuration>
-    </watches-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="watch">
+      <expression>
+        <expression-string>x_r</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>shape(x_r)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
       <expression>
         <expression-string>self.dir_z_train</expression-string>
         <language-id>Python</language-id>
@@ -471,45 +512,12 @@
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/DL/gsn/test.py" />
-    <entry file="file://$PROJECT_DIR$/DL/gsn/pyscatwave-master/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor />
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DL/pyscatwave-master/setup.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="16" column="20" lean-forward="true" selection-start-line="16" selection-start-column="20" selection-end-line="16" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DL/pyscatwave-master/test/test_data.pt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DL/pyscatwave-master/examples/mnist.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="625">
-          <caret line="50" lean-forward="true" selection-start-line="50" selection-end-line="50" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DL/pyscatwave-master/test/test_scattering.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1322">
-          <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DL/pyscatwave-master/examples/reconstruction_exp.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/DL/gsn/pyscatwave-master/README.md" />
+    <entry file="file://$PROJECT_DIR$/DL/pyscatwave-master/setup.py" />
+    <entry file="file://$PROJECT_DIR$/DL/pyscatwave-master/test/test_data.pt" />
+    <entry file="file://$PROJECT_DIR$/DL/pyscatwave-master/examples/mnist.py" />
+    <entry file="file://$PROJECT_DIR$/DL/pyscatwave-master/test/test_scattering.py" />
+    <entry file="file://$PROJECT_DIR$/DL/pyscatwave-master/examples/reconstruction_exp.py" />
     <entry file="file://$PROJECT_DIR$/DL/gsn/gsn/main.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="25">
@@ -597,6 +605,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/DL/torch_practice/tensorboardX.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="24" lean-forward="true" selection-start-line="24" selection-end-line="24" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/DL/gsn/gsn/utils.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
@@ -606,31 +621,55 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/DL/gsn/gsn/GSN.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="447">
-          <caret line="115" selection-start-line="115" selection-end-line="118" selection-end-column="52" />
+        <state relative-caret-position="387">
+          <caret line="111" selection-start-line="111" selection-end-line="111" />
           <folding>
             <element signature="e#72#81#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/DL/torch_practice/tensorboardX.py">
+    <entry file="file://$PROJECT_DIR$/DL/gsn/gsn/GSN_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="24" lean-forward="true" selection-start-line="24" selection-end-line="24" />
+        <state relative-caret-position="163">
+          <caret line="46" lean-forward="true" selection-start-line="46" selection-end-line="46" />
           <folding>
-            <element signature="e#0#38#0" expanded="true" />
+            <element signature="e#15#24#0" expanded="true" />
+            <marker date="1543065860066" expanded="true" signature="448:453" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/DL/gsn/gsn/GSN_test.py">
+    <entry file="file://$USER_HOME$/anaconda2/lib/python2.7/site-packages/sklearn/discriminant_analysis.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="292">
-          <caret line="87" column="44" lean-forward="true" selection-start-line="87" selection-start-column="44" selection-end-line="87" selection-end-column="44" />
+        <state relative-caret-position="220">
+          <caret line="186" lean-forward="true" selection-start-line="186" selection-end-line="186" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="417">
+          <caret line="1663" selection-start-line="1663" selection-end-line="1663" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ML/sklearn/PCA/pca_lda_fa.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1329">
+          <caret line="134" column="48" lean-forward="true" selection-start-line="134" selection-start-column="48" selection-end-line="134" selection-end-column="48" />
           <folding>
-            <element signature="e#15#24#0" expanded="true" />
-            <marker date="1543065860066" expanded="true" signature="448:453" ph="..." />
+            <marker date="1543242792001" expanded="true" signature="2228:2233" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ML/sklearn/PCA/IncrementalPCA.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="3" lean-forward="true" selection-start-line="10" selection-start-column="3" selection-end-line="10" selection-end-column="3" />
+          <folding>
+            <element signature="e#373#391#0" expanded="true" />
           </folding>
         </state>
       </provider>
