@@ -24,7 +24,7 @@ from torchvision.utils import save_image
 
 class GSN:
     def __init__(self, parameters):
-        dir_datasets = os.path.expanduser('/home/jains/datasets/gsndatasets')#存储数据集
+        dir_datasets = os.path.expanduser('/home/jains/datasets/gsndatasets')#将path中包含的“～”和“～user”转换成用户目录
         dir_experiments = os.path.expanduser('./experiments')#存储模型
         # / home / jains / Project - Zhang / gsn / experiments / gsn_hf / celebA_128_1w_65536_2048_after_65536_ScatJ4_projected512_1norm_ncfl32_NormL1 / models
         dataset = parameters['dataset']
@@ -50,36 +50,32 @@ class GSN:
         create_folder(self.dir_logs)
 
         self.batch_size = 128
-        self.nb_epochs_to_save = 1
+        self.nb_epochs_to_save = 1#几个epoch保存1次
 
 
     def train(self, epoch_to_restore=0):
-        g = Generator(self.nb_channels_first_layer, self.dim)
+        g = Generator(self.nb_channels_first_layer, self.dim)#生成器网络
 
         if epoch_to_restore > 0:
-            filename_model = os.path.join(self.dir_models, 'epoch_{}.pth'.format(epoch_to_restore))
+            filename_model = os.path.join(self.dir_models, 'epoch_{}.pth'.format(epoch_to_restore))#加载之前训练的网络
             g.load_state_dict(torch.load(filename_model))
         else:
-            g.apply(weights_init)
+            g.apply(weights_init)#否则初始化网络权重
 
         g.cuda()
         g.train()
-        print("--------------------------------")
-        print self.dir_x_train
-        print self.dir_z_train
-        dataset = EmbeddingsImagesDataset(self.dir_z_train, self.dir_x_train)
+
+        dataset = EmbeddingsImagesDataset(self.dir_z_train, self.dir_x_train)#做嵌入
         dataloader = DataLoader(dataset, self.batch_size, shuffle=True, num_workers=4, pin_memory=True)
 
 
-
-
-        fixed_dataloader = DataLoader(dataset, 16)
-        fixed_batch = next(iter(fixed_dataloader))
+        fixed_dataloader = DataLoader(dataset, 16)#用作验证集的数据
+        fixed_batch = next(iter(fixed_dataloader))#所有值 /127.5 - 1
 
         criterion = torch.nn.L1Loss()
 
         optimizer = optim.Adam(g.parameters())
-        writer = SummaryWriter(self.dir_logs)
+        writer = SummaryWriter(self.dir_logs)#写入日志文档，参数为文件夹名字
 
         try:
             epoch = epoch_to_restore
@@ -89,19 +85,21 @@ class GSN:
                     epoch += 1
                     print("epoch is %d"%epoch)
                     for idx_batch, current_batch in enumerate(tqdm(dataloader)):
-                        g.zero_grad()
+                        g.zero_grad()#梯度设置为0
                         x = Variable(current_batch['x']).type(torch.FloatTensor).cuda()
                         z = Variable(current_batch['z']).type(torch.FloatTensor).cuda()
-                        g_z = g.forward(z)
+                        g_z = g.forward(z)#前向传播
 
-                        loss = criterion(g_z, x)
-                        loss.backward()
-                        optimizer.step()
+                        loss = criterion(g_z, x)#计算损失
+                        loss.backward()#反向传播
+                        optimizer.step()#更新权重
 
-                    writer.add_scalar('train_loss', loss, epoch)
+                    writer.add_scalar('train_loss', loss, epoch)#把训练损失写入文件中
                     print("loss is %f ",np.float(loss.cpu()))
 
-                z = Variable(fixed_batch['z']).type(torch.FloatTensor).cuda()
+
+                #？？？？？？？？？？？？？？？？？？？？？？？？？？？
+                z = Variable(fixed_batch['z']).type(torch.FloatTensor).cuda()#测试数据集
                 g.eval()
                 g_z = g.forward(z)
                 images = make_grid(g_z.data[:16], nrow=4, normalize=True)
@@ -167,13 +165,10 @@ class GSN:
 
     def generate_from_model(self, epoch):
         filename_model = os.path.join(self.dir_models, 'epoch_{}.pth'.format(epoch))
-        g = Generator(self.nb_channels_first_layer, self.dim)
-        g.load_state_dict(torch.load(filename_model))
+        g = Generator(self.nb_channels_first_layer, self.dim)#生成器网络
+        g.load_state_dict(torch.load(filename_model))##加载训练好的模型
         g.cuda()
         g.eval()
-
-        # self.dir_z_train = '/home/jains/datasets/gsndatasets/celebA_128_1w/65536_ScatJ4_projected512_1norm'
-        # self.dir_x_train = '/home/jains/datasets/gsndatasets/celebA_128_1w/65536'
 
         def _generate_from_model(dir_z, dir_x, train_test):
             dataset = EmbeddingsImagesDataset(dir_z, dir_x)
@@ -186,8 +181,8 @@ class GSN:
             temp = make_grid(g_z.data[:16], nrow=4).cpu().numpy().transpose((1, 2, 0))
             Image.fromarray(np.uint8((temp + 1) * 127.5)).save(filename_images)
 
-        _generate_from_model(self.dir_z_train, self.dir_x_train, 'train')
-        _generate_from_model(self.dir_z_test, self.dir_x_test, 'test')
+        # _generate_from_model(self.dir_z_train, self.dir_x_train, 'train')
+        # _generate_from_model(self.dir_z_test, self.dir_x_test, 'test')
 
         def _generate_path(dir_z, dir_x, train_test):
             dataset = EmbeddingsImagesDataset(dir_z, dir_x)
@@ -223,8 +218,8 @@ class GSN:
                 filename_image = os.path.join(folder_to_save, '{}.png'.format(idx))
                 Image.fromarray(np.uint8((g_z[idx] + 1) * 127.5)).save(filename_image)
 
-        _generate_path(self.dir_z_train, self.dir_x_train, 'train')
-        _generate_path(self.dir_z_test, self.dir_x_test, 'test')
+        # _generate_path(self.dir_z_train, self.dir_x_train, 'train')
+        # _generate_path(self.dir_z_test, self.dir_x_test, 'test')
 
         def _generate_random():
             nb_samples = 16
@@ -301,8 +296,10 @@ def create_path(nb_samples):
 
 from utils import create_name_experiment
 
+
+
 parameters = dict()
-parameters['dataset'] = 'celebA_128_1k'
+parameters['dataset'] = 'celebA_128'
 parameters['train_attribute'] = '65536'
 parameters['test_attribute'] = '2048_after_65536'
 parameters['dim'] = 512
@@ -312,6 +309,6 @@ parameters['nb_channels_first_layer'] = 32
 parameters['name_experiment'] = create_name_experiment(parameters, 'NormL1')
 # print (parameters['name_experiment'])
 gsn = GSN(parameters)
-gsn.train(92)
+# gsn.train()
 # gsn.save_originals()
-# gsn.generate_from_model(100)
+gsn.generate_from_model(1)

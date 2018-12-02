@@ -1,6 +1,6 @@
 ﻿# -*- coding=utf-8 -*-
 
-from scatwave.scattering import Scattering
+
 import torch
 import tensorflow as tf
 import matplotlib.pyplot as plt
@@ -16,7 +16,17 @@ import scipy.io as sio
 import sklearn
 from sklearn.decomposition import PCA
 
+def resize_face():
+    source_files = './datasets/diracs/1024/'
+    filename_list = os.listdir(source_files)
 
+    for i in range(len(filename_list)):
+        filename = filename_list[i]
+        imgName = os.path.join(source_files, os.path.basename(filename_list[i]))
+        if (os.path.splitext(imgName)[1] != '.jpg'):continue
+        img = Image.open(imgName).resize((128,128))
+        img.save('./datasets/celebA/256/%s'%filename)
+    return
 def cut_celeba_face():
     list = os.listdir('./../datasets/img_align_celeba/')
 
@@ -65,43 +75,6 @@ def cut_celeba_face():
             pil_image.save('./../datasets/face/%s'%fileName)#save the faces
         if i%100 == 0:
             print('the number of images is {}'.format(i))
-
-def resize_face():
-    source_files = './datasets/diracs/1024/'
-    filename_list = os.listdir(source_files)
-
-    for i in range(len(filename_list)):
-        filename = filename_list[i]
-        imgName = os.path.join(source_files, os.path.basename(filename_list[i]))
-        if (os.path.splitext(imgName)[1] != '.jpg'):continue
-        img = Image.open(imgName).resize((128,128))
-        img.save('./datasets/celebA/256/%s'%filename)
-
-
-
-def scat_data(data_dir,outdata_dir,M,N,J):
-
-    filename_list = os.listdir(data_dir)#read the directory files's name
-    number = len(filename_list)
-    scat = Scattering(M=M, N=N, J=J).cuda()  # scattering transform
-    for i in range(0,number):
-        imgName = os.path.join(data_dir, os.path.basename(filename_list[i]))
-        if (os.path.splitext(imgName)[1] != '.jpg'): continue
-        # img = np.array(Image.open(imgName)) / 255.
-        img = np.array(Image.open(imgName))
-        img = img.reshape(1,M,N,3)
-        img_data = img.transpose(0, 3, 1, 2).astype(np.float32)  # change dim
-        img_data = torch.from_numpy(img_data).cuda()
-        out_data = np.array(scat(img_data))
-        # print out_data.shape
-        str1 = filename_list[i].split('.')
-        # print (outdata_dir + str1[0] + '.npy')
-        np.save(outdata_dir + str1[0] + '.npy',out_data)
-
-        if i%100 ==0:
-            print ("step is %d",i)
-# /home/jains/datasets/celebA/Scat_J4
-
 def PCA_example():
     import matplotlib.pyplot as plt
     from sklearn.decomposition import PCA
@@ -136,33 +109,54 @@ def PCA_example():
     plt.scatter(blue_x, blue_y, c='b', marker='D')
     plt.scatter(green_x, green_y, c='g', marker='.')
     plt.show()
+def pca_mnist():
 
-def pca_data(data_dir):
+    from sklearn.datasets import fetch_mldata
+    mnist = fetch_mldata('MNIST original')
+    X = mnist["data"]
+    print type(X), X.shape
+    # 使用np.array_split（）方法的IPCA
+    from sklearn.decomposition import IncrementalPCA
+    n_batches = 100
+    inc_pca = IncrementalPCA(n_components=154)
+    for X_batch in np.array_split(X, n_batches):
+        inc_pca.partial_fit(X_batch)
+    inc_pca.partial_fit(X)
+
+    X_mnist_reduced = inc_pca.transform(X)
+    print X_mnist_reduced.shape
+# def pca_data(data_dir,out_dir):
+#     filename_list = os.listdir(data_dir)  # read the directory files's name
+#     number = len(filename_list)
+#     alldata = []
+#     for i in range(len(filename_list)):
+#         tmp = np.load(data_dir + filename_list[i])
+#         alldata.append(tmp)
+#     alldata = np.array(alldata)
+#     alldata = alldata.reshape(len(alldata), -1)  # 1024*80064
+#     pca = PCA(n_components=512, copy=True, whiten=True, svd_solver='randomized')
+#     X = pca.fit_transform(alldata)  # 1024*512
+#     # x_or = pca.inverse_transform(X)#逆转换为原始数据
+#     for i in range(number):
+#         str1 = filename_list[i].split('.')
+#         np.save(out_dir + str1[0] + '.npy', X[i])
+def pca_data(data_dir,out_dir):
     filename_list = os.listdir(data_dir)  # read the directory files's name
     number = len(filename_list)
     alldata = []
-    for i in range (len(filename_list)):
-
-        tmp = np.load(data_dir+filename_list[i])
-#        tmp = np.array(sio.loadmat(data_dir+filename_list[i])['buf'])
-
+    for i in range(len(filename_list)):
+        tmp = np.load(data_dir + filename_list[i])
         alldata.append(tmp)
-        # print ("append step %d"%i)
-
-        # if (i+1)%10000 == 0 :
-
-    alldata = np.array(alldata)
-    alldata = alldata.reshape(len(alldata), -1)
-
-    pca = PCA(n_components=512, copy=True, whiten=True, svd_solver='randomized')
-    X = pca.fit_transform(alldata)
-
-    for i in range(number):
-        str1 = filename_list[i].split('.')
-        np.save('/home/jains/datasets/gsndatasets/celebA_128_1k/65536_ScatJ4_projected512_1norm/' + str1[0] + '.npy', X[i])
-            # alldata = []
-
-
+        if (i+1)%16384 == 0:
+            alldata = np.array(alldata)
+            alldata = alldata.reshape(len(alldata), -1)  # 16384*80064
+            pca = PCA(n_components=512, copy=True, whiten=True, svd_solver='randomized')
+            X = pca.fit_transform(alldata)  # 1024*512
+            # x_or = pca.inverse_transform(X)#逆转换为原始数据
+            for j in range(len(alldata)):
+                str1 = filename_list[j + (i/16384)*16384].split('.')
+                np.save(out_dir + str1[0] + '.npy', X[j])
+            alldata = []
 
 def make_norm_data(data_dir):
     # filename_list = os.listdir(data_dir)
@@ -195,177 +189,59 @@ def make_norm_data(data_dir):
     # # print data.shape
     # new_data = pca.fit_transform(data)
     # print new_data.shape
-
-
-
-def choose_img(src_dir,out_dir,num):
+def choose_img(src_dir,out_dir,num=1):
     filename_list = os.listdir(src_dir)  # read the directory files's name
-    for i in range(num):
+    for i in range(70001,86385):
         imgName = os.path.join(src_dir, os.path.basename(filename_list[i]))
         if (os.path.splitext(imgName)[1] != '.jpg'): continue
         img = Image.open(imgName)
 
         img.save(out_dir + filename_list[i])
-        print ("step is %d k",i/1000)
+        print ("step is %d k",(i-70000)/1000)
+    return 0
 
+def scat_data(data_dir,outdata_dir,M,N,J):
+    from scatwave.scattering import Scattering
+    filename_list = os.listdir(data_dir)#read the directory files's name
+    number = len(filename_list)
+    scat = Scattering(M=M, N=N, J=J).cuda()  # scattering transform
+    for i in range(0,number):
+        imgName = os.path.join(data_dir, os.path.basename(filename_list[i]))
+        if (os.path.splitext(imgName)[1] != '.jpg'): continue
+        img = np.array(Image.open(imgName)) / 127.5 - 1#与x保持一致，归一化到[-1,1]之间
+        # img = np.array(Image.open(imgName))
+        # print (np.max(img),np.min(img))
+        img = img.reshape(1,M,N,3)#1*128*128*3
+        img_data = img.transpose(0, 3, 1, 2).astype(np.float32)  # 1*3*128*128
+        img_data = torch.from_numpy(img_data).cuda()
+        out_data = np.array(scat(img_data))#1*3*417*8*8
+        # print (np.max(out_data),np.min(out_data))
+        # print out_data.shape
+        str1 = filename_list[i].split('.')
+        # print (outdata_dir + str1[0] + '.npy')
+        np.save(outdata_dir + str1[0] + '.npy',out_data)
+        if i%100 ==0:
+            print ("step is %d",i)
+    return 0
 
+train_data_dir = '/home/jains/datasets/gsndatasets/celebA_128/65536'
+train_scat_dir = '/home/jains/datasets/gsndatasets/celebA_128/65536_scat/'
+train_norm_dir = '/home/jains/datasets/gsndatasets/celebA_128/65536_ScatJ4_projected512_1norm/'
 
-inputdata_dir = '/home/jains/datasets/gsndatasets/celebA_128_1k/65536'
-outputdata_dir = '/home/jains/datasets/gsndatasets/celebA_128_1k/65536_scat/'
-
-
+test_data_dir = '/home/jains/datasets/gsndatasets/celebA_128/2048_after_65536'
+test_scat_dir = '/home/jains/datasets/gsndatasets/celebA_128/2048_after_65536_scat/'
+test_norm_dir = '/home/jains/datasets/gsndatasets/celebA_128/2048_after_65536_ScatJ4_projected512_1norm/'
 # outimg_dir = '/home/jains/datasets/gsn/celebA_128/65536/'
 M = 128;N = 128;J = 4
-
-
-
-
 #函数调用
-# scat_data(inputdata_dir,outputdata_dir,M,N,J)
-pca_data(outputdata_dir)
+scat_data(train_data_dir,train_scat_dir,M,N,J)
+pca_data(train_scat_dir,train_norm_dir)
+scat_data(test_data_dir,test_scat_dir,M,N,J)
+pca_data(test_scat_dir,test_norm_dir)
 # make_norm_data(outputdata_dir)
 # cut_celeba_face()
-# choose_img(inputdata_dir,outimg_dir,number)
-
-
-def pca_mnist():
-
-    from sklearn.datasets import fetch_mldata
-    mnist = fetch_mldata('MNIST original')
-    X = mnist["data"]
-    print type(X),X.shape
-    # 使用np.array_split（）方法的IPCA
-    from sklearn.decomposition import IncrementalPCA
-    n_batches = 100
-    inc_pca = IncrementalPCA(n_components=154)
-    for X_batch in np.array_split(X, n_batches):
-        inc_pca.partial_fit(X_batch)
-    inc_pca.partial_fit(X)
-
-    X_mnist_reduced = inc_pca.transform(X)
-    print X_mnist_reduced.shape
-
-# pca_mnist()
-
-# data = np.load('epoch_1.pth')
-# print type(data)
-# resize_face()
+# face_dir = '/home/jains/datasets/celebA/cut_face/'
+# choose_img(face_dir,test_data_dir,1)
 
 
 
-
-
-
-# img_data = np.array(img_data)
-# img_data = img_data.transpose(0,3,1,2).astype(np.float32)#change dim
-# print img_data.shape
-
-
-# trainloader = torch.utils.data.DataLoader(img_data,batch_size = 1,shuffle=True,num_workers=2)#train loader
-# for i,iter_data in enumerate(trainloader):
-#     iter_data = iter_data.cuda()
-#     scat = Scattering(M=128, N=128, J=2).cuda()  # scattering transform
-#     out = scat(iter_data)
-#
-#     scat_data = np.array(out)
-#     np.save('./datasets/diracs/1024_ScatJ4/'+filename_list[i]+'.npy')
-
-# dataiter = iter(trainloader)
-# data = next(dataiter)
-# data = data.cuda()
-# scat = Scattering(M=128, N=128, J=2).cuda()#scattering transform
-# out = scat(data)
-# out_data = np.array(out)
-# # np.save("out_data.npy",out_data)
-# print out.size()
-
-
-
-
-
-#
-#
-# ''' 读取MNIST数据方法一'''
-# from tensorflow.examples.tutorials.mnist import input_data
-# mnist = input_data.read_data_sets('./MNIST_data',one_hot=True)
-# '''1)获得数据集的个数'''
-# train_nums = mnist.train.num_examples
-# validation_nums = mnist.validation.num_examples
-# test_nums = mnist.test.num_examples
-# '''2)获得数据值'''
-# train_data = mnist.train.images   #所有训练数据
-# val_data = mnist.validation.images  #(5000,784)
-# test_data = mnist.test.images       #(10000,784)
-# """获取标签"""
-# train_labels = mnist.train.labels     #(55000,10)
-# val_labels = mnist.validation.labels  #(5000,10)
-# test_labels = mnist.test.labels       #(10000,10)
-#
-# data = torchvision.datasets.ImageFolder(root="./../datasets/cut_face")
-#
-# # data = torchvision.datasets.ImageFolder(root="./../datasets/face", transforms.ToTensor())
-#
-#
-# data_dir = './../datasets/cut_face/'
-# # trans data
-# image_datasets = {x: torchvision.datasets.ImageFolder(os.path.join(data_dir, x)) for x in ['face/']}
-# # load data
-# # data_loaders = {x: DataLoader(image_datasets[x], batch_size=BATCH_SIZE, shuffle=True) for x in ['train', 'val']}
-#
-# # data_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
-# # class_names = image_datasets['train'].classes
-# # print(data_sizes, class_names)
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# # trainset = torchvision.datasets.CIFAR10(root='./data',train=True,download=True,transform=transform)
-# trainloader = torch.utils.data.DataLoader(data,batch_size = 4,shuffle=True,num_workers=2)
-# # testset = torchvision.datasets.CIFAR10(root='./data',train=False,download=True,transform=transform)
-# testloader = torch.utils.data.DataLoader(test_data,batch_size = 4,shuffle = False,num_workers = 2)
-
-# plt.figure()
-# for i in range(100):
-#     im = train_data[i].reshape(28,28)
-#     # im = batch_xs[i].reshape(28,28)
-#     plt.imshow(im,'gray')
-#     plt.pause(0.0000001)
-# plt.show()
-# im = train_data[0].reshape(28,28)
-# print (type(im))
-# im = torch.from_numpy(im)
-# im = im.cuda()
-# print(im)
-# scat = Scattering(M=28, N=28, J=2).cuda()
-# # out = scat(im)
-
-
-
-
-# dataiter = iter(trainloader)
-# data = next(dataiter)
-#
-# data = data.view(-1,1,28,28)
-# data = data.cuda()
-# scat = Scattering(M=28, N=28, J=2).cuda()
-# out = scat(data)
-# print out.size()
-
-
-
-
-
-# for i, data in enumerate(trainloader, 0):
-#       inputs = data
-#       inputs = inputs.view(4,1,28,28)
-      # inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())  # 包装数据
