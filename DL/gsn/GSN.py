@@ -49,13 +49,12 @@ class GSN:
         create_folder(self.dir_models)
         create_folder(self.dir_logs)
 
-        self.batch_size = 128
+        self.batch_size = 32
         self.nb_epochs_to_save = 1#几个epoch保存1次
 
 
     def train(self, epoch_to_restore=0):
         g = Generator(self.nb_channels_first_layer, self.dim)#生成器网络
-
         if epoch_to_restore > 0:
             filename_model = os.path.join(self.dir_models, 'epoch_{}.pth'.format(epoch_to_restore))#加载之前训练的网络
             g.load_state_dict(torch.load(filename_model))
@@ -70,21 +69,29 @@ class GSN:
 
 
         fixed_dataloader = DataLoader(dataset, 16)#用作验证集的数据
-        fixed_batch = next(iter(fixed_dataloader))#所有值 /127.5 - 1
 
+        # idx = iter(fixed_dataloader)
+        # next(idx)
+        # next(idx)
+
+        fixed_batch = next(iter(fixed_dataloader))#所有值 /127.5 - 1
+        # fixed_batch1 = next(iter(dataloader))
         criterion = torch.nn.L1Loss()
 
         optimizer = optim.Adam(g.parameters())
         writer = SummaryWriter(self.dir_logs)#写入日志文档，参数为文件夹名字
-
+        # lr = np.arange(1e-5,1.0,(1.0-1e-5)/512.)
         try:
             epoch = epoch_to_restore
             while True:
+
                 g.train()
                 for _ in range(self.nb_epochs_to_save):
                     epoch += 1
                     print("epoch is %d"%epoch)
                     for idx_batch, current_batch in enumerate(tqdm(dataloader)):
+                        # print idx_batch
+                        # optimizer = optim.Adam(g.parameters(), lr=lr[idx_batch])
                         g.zero_grad()#梯度设置为0
                         x = Variable(current_batch['x']).type(torch.FloatTensor).cuda()
                         z = Variable(current_batch['z']).type(torch.FloatTensor).cuda()
@@ -94,11 +101,18 @@ class GSN:
                         loss.backward()#反向传播
                         optimizer.step()#更新权重
 
-                    writer.add_scalar('train_loss', loss, epoch)#把训练损失写入文件中
-                    print("loss is %f ",np.float(loss.cpu()))
+                        # writer.add_scalar('train_loss', loss, idx_batch + (epoch-1)*512)#把训练损失写入文件中
+                        # writer.add_scalar('lr',loss,lr[idx_batch]*100000 + 100000*0.5*(epoch - 1))
+                        if idx_batch%4 == 0:
+                            writer.add_scalar('train_loss_batch', loss, idx_batch + (epoch-1)*512)  # 把训练损失写入文件中
+                        # print("loss is %f ",np.float(loss.cpu()))
 
+
+                writer.add_scalar('train_loss_epoch', loss, epoch )  # 把训练损失写入文件中
 
                 #？？？？？？？？？？？？？？？？？？？？？？？？？？？
+                # break
+
                 z = Variable(fixed_batch['z']).type(torch.FloatTensor).cuda()#测试数据集
                 g.eval()
                 g_z = g.forward(z)
@@ -181,8 +195,8 @@ class GSN:
             temp = make_grid(g_z.data[:16], nrow=4).cpu().numpy().transpose((1, 2, 0))
             Image.fromarray(np.uint8((temp + 1) * 127.5)).save(filename_images)
 
-        # _generate_from_model(self.dir_z_train, self.dir_x_train, 'train')
-        # _generate_from_model(self.dir_z_test, self.dir_x_test, 'test')
+        _generate_from_model(self.dir_z_train, self.dir_x_train, 'train')
+        _generate_from_model(self.dir_z_test, self.dir_x_test, 'test')
 
         def _generate_path(dir_z, dir_x, train_test):
             dataset = EmbeddingsImagesDataset(dir_z, dir_x)
@@ -296,19 +310,18 @@ def create_path(nb_samples):
 
 from utils import create_name_experiment
 
-
-
 parameters = dict()
-parameters['dataset'] = 'celebA_128'
+parameters['dataset'] = 'celebA'
 parameters['train_attribute'] = '65536'
 parameters['test_attribute'] = '2048_after_65536'
 parameters['dim'] = 512
 parameters['embedding_attribute'] = 'ScatJ4_projected{}_1norm'.format(parameters['dim'])
+# parameters['embedding_attribute'] = 'ScatJ4'
 parameters['nb_channels_first_layer'] = 32
 
 parameters['name_experiment'] = create_name_experiment(parameters, 'NormL1')
 # print (parameters['name_experiment'])
 gsn = GSN(parameters)
-# gsn.train()
+gsn.train()
 # gsn.save_originals()
-gsn.generate_from_model(1)
+# gsn.generate_from_model(140)

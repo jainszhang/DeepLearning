@@ -15,9 +15,7 @@ def normalize(vector):
 
 
 def get_nb_files(input_dir):
-    # print input_dir
     list_files = [file for file in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, file))]
-    # print len(list_files)
     return len(list_files)
 
 

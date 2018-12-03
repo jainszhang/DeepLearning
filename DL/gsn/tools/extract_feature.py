@@ -142,13 +142,16 @@ def pca_mnist():
 #         np.save(out_dir + str1[0] + '.npy', X[i])
 def pca_data(data_dir,out_dir):
     filename_list = os.listdir(data_dir)  # read the directory files's name
-    number = len(filename_list)
-    alldata = []
+    # filename_list.sort()#对读取的文件名进行排序
+    np.save('./test_pcaname_list.npy',np.array(filename_list))#保存pca数据名字列表
+    # number = len(filename_list)
+    alldata1 = []
     for i in range(len(filename_list)):
         tmp = np.load(data_dir + filename_list[i])
-        alldata.append(tmp)
+        alldata1.append(tmp)
         if (i+1)%16384 == 0:
-            alldata = np.array(alldata)
+            alldata = np.array(alldata1)
+            alldata1 = []#释放内存
             alldata = alldata.reshape(len(alldata), -1)  # 16384*80064
             pca = PCA(n_components=512, copy=True, whiten=True, svd_solver='randomized')
             X = pca.fit_transform(alldata)  # 1024*512
@@ -156,7 +159,7 @@ def pca_data(data_dir,out_dir):
             for j in range(len(alldata)):
                 str1 = filename_list[j + (i/16384)*16384].split('.')
                 np.save(out_dir + str1[0] + '.npy', X[j])
-            alldata = []
+            # alldata = []
 
 def make_norm_data(data_dir):
     # filename_list = os.listdir(data_dir)
@@ -191,6 +194,7 @@ def make_norm_data(data_dir):
     # print new_data.shape
 def choose_img(src_dir,out_dir,num=1):
     filename_list = os.listdir(src_dir)  # read the directory files's name
+
     for i in range(70001,86385):
         imgName = os.path.join(src_dir, os.path.basename(filename_list[i]))
         if (os.path.splitext(imgName)[1] != '.jpg'): continue
@@ -200,14 +204,19 @@ def choose_img(src_dir,out_dir,num=1):
         print ("step is %d k",(i-70000)/1000)
     return 0
 
+
+
+
 def scat_data(data_dir,outdata_dir,M,N,J):
     from scatwave.scattering import Scattering
     filename_list = os.listdir(data_dir)#read the directory files's name
+    filename_list.sort()
+    np.save('./test_scatname_list.npy',np.array(filename_list))
     number = len(filename_list)
     scat = Scattering(M=M, N=N, J=J).cuda()  # scattering transform
     for i in range(0,number):
         imgName = os.path.join(data_dir, os.path.basename(filename_list[i]))
-        if (os.path.splitext(imgName)[1] != '.jpg'): continue
+        if (os.path.splitext(imgName)[1] != '.png'): continue
         img = np.array(Image.open(imgName)) / 127.5 - 1#与x保持一致，归一化到[-1,1]之间
         # img = np.array(Image.open(imgName))
         # print (np.max(img),np.min(img))
@@ -218,6 +227,7 @@ def scat_data(data_dir,outdata_dir,M,N,J):
         # print (np.max(out_data),np.min(out_data))
         # print out_data.shape
         str1 = filename_list[i].split('.')
+        print (str1[0])
         # print (outdata_dir + str1[0] + '.npy')
         np.save(outdata_dir + str1[0] + '.npy',out_data)
         if i%100 ==0:
@@ -225,23 +235,61 @@ def scat_data(data_dir,outdata_dir,M,N,J):
     return 0
 
 train_data_dir = '/home/jains/datasets/gsndatasets/celebA_128/65536'
-train_scat_dir = '/home/jains/datasets/gsndatasets/celebA_128/65536_scat/'
+train_scat_dir = '/home/jains/datasets/gsndatasets/celebA_128/65536_ScatJ4/'
 train_norm_dir = '/home/jains/datasets/gsndatasets/celebA_128/65536_ScatJ4_projected512_1norm/'
 
 test_data_dir = '/home/jains/datasets/gsndatasets/celebA_128/2048_after_65536'
-test_scat_dir = '/home/jains/datasets/gsndatasets/celebA_128/2048_after_65536_scat/'
+test_scat_dir = '/home/jains/datasets/gsndatasets/celebA_128/2048_after_65536_ScatJ4/'
 test_norm_dir = '/home/jains/datasets/gsndatasets/celebA_128/2048_after_65536_ScatJ4_projected512_1norm/'
 # outimg_dir = '/home/jains/datasets/gsn/celebA_128/65536/'
 M = 128;N = 128;J = 4
 #函数调用
-scat_data(train_data_dir,train_scat_dir,M,N,J)
+# scat_data(train_data_dir,train_scat_dir,M,N,J)
 pca_data(train_scat_dir,train_norm_dir)
-scat_data(test_data_dir,test_scat_dir,M,N,J)
-pca_data(test_scat_dir,test_norm_dir)
+# scat_data(test_data_dir,test_scat_dir,M,N,J)
+# pca_data(test_scat_dir,test_norm_dir)
 # make_norm_data(outputdata_dir)
 # cut_celeba_face()
 # face_dir = '/home/jains/datasets/celebA/cut_face/'
 # choose_img(face_dir,test_data_dir,1)
 
 
+rename_train_img_out = '/home/jains/datasets/gsndatasets/celebA/65536/'
+rename_test_img_out = '/home/jains/datasets/gsndatasets/celebA/2048_after_65536/'
+def rename_file(data_dir,norm_data_dir):
 
+    data_file_list = os.listdir(data_dir)#img数据名列表
+    norm_data_list = os.listdir(norm_data_dir)#norm数据名列表
+    data_file_list.sort()#两者文件名同时排序
+    norm_data_list.sort()
+    assert len(data_file_list) == len(norm_data_list),"图片文件数量和norm数据文件数量不全一致"#判断两个文件夹下文件个数是否一致
+
+    for i in range(len(data_file_list)):
+        assert data_file_list[i].split('.')[0] == norm_data_list[i].split('.')[0],"norm数据和img数据文件名不一致"
+        imgName = os.path.join(data_dir, os.path.basename(data_file_list[i]))#img文件完全地址
+        normName = os.path.join(norm_data_dir,os.path.basename(norm_data_list[i]))#norm文件完全地址
+
+        # str1 = filename_list[j + (i / 16384) * 16384].split('.')
+
+        if (os.path.splitext(imgName)[1] != '.jpg'): continue#检查文件后缀名是否为.jpg
+        if (os.path.splitext(normName)[1] != '.npy'): continue#检查norm文件后缀名是否为.npy
+
+        img = Image.open(imgName)#读取img图片
+        norm = np.load(normName)#读取norm文件
+
+        img.save('/home/jains/datasets/gsndatasets/celebA/2048_after_65536/' + str(i) + '.jpg')
+        np.save('/home/jains/datasets/gsndatasets/celebA/2048_after_65536_ScatJ4_projected512_1norm/' + str(i) + '.npy',norm)
+        print ("step is %d k"% (i / 1000))
+# '/home/jains/datasets/gsndatasets/celebA/2048_after_65536/'
+# rename_file(train_data_dir,rename_train_img_out)
+# rename_file(test_data_dir,test_norm_dir)
+
+
+# data_dir = '/home/jains/datasets/gsndatasets/celebA/256_ScatJ4/'
+# filename_list = os.listdir(data_dir)  # read the directory files
+#
+# filename_list1 = os.listdir(data_dir)
+# if filename_list == filename_list1:
+#     print "True"
+# else:
+#     print "False"

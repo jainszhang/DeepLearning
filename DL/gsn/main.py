@@ -23,10 +23,10 @@ parameters['nb_channels_first_layer'] = 32
 parameters['name_experiment'] = create_name_experiment(parameters, 'NormL1')
 # print (parameters['name_experiment'])
 gsn = GSN(parameters)
-gsn.train()
+#gsn.train(465)
 # gsn.save_originals()
-#gsn.generate_from_model(10)
-# gsn.compute_errors(190)
+gsn.generate_from_model(523)
+#gsn.compute_errors(190)
 # gsn.analyze_model(150)
 
 

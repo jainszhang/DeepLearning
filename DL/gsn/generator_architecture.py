@@ -31,11 +31,11 @@ class Generator(nn.Module):
     def __init__(self, nb_channels_first_layer, z_dim, size_first_layer=4):
         super(Generator, self).__init__()
 
-        nb_channels_input = nb_channels_first_layer * 32    #16*32 = 512
+        nb_channels_input = nb_channels_first_layer * 32
 
         self.main = nn.Sequential(
             nn.Linear(in_features=z_dim,        #z_dim = 512
-                      out_features=size_first_layer * size_first_layer * nb_channels_input, #4*4*512
+                      out_features=size_first_layer * size_first_layer * nb_channels_input,
                       bias=False),
             View(-1, nb_channels_input, size_first_layer, size_first_layer),
             nn.BatchNorm2d(nb_channels_input, eps=0.001, momentum=0.9),
@@ -100,33 +100,97 @@ def weights_init(layer):
         layer.bias.data.fill_(0)
 
 
-if __name__ == '__main__':
-    dir_datasets = os.path.expanduser('./datasets')
-    dataset = 'celebA'
-    dataset_attribute = '256'
-    embedding_attribute = 'ScatJ4'
-
-
-    dir_x_train = os.path.join(dir_datasets, dataset, '{0}'.format(dataset_attribute))
-    dir_z_train = os.path.join(dir_datasets, dataset, '{0}_{1}'.format(dataset_attribute, embedding_attribute))
-
-    dataset = EmbeddingsImagesDataset(dir_z_train, dir_x_train)
-    fixed_dataloader = DataLoader(dataset, batch_size=128)
-    fixed_batch = next(iter(fixed_dataloader))
-
-    nb_channels_first_layer = 16
-
-    npdata = np.array(np.load('10000.npy'))
-    npdata = npdata[:100]
-    fixed_batch['z'] = torch.from_numpy(npdata)
-    print fixed_batch['z'].size()
 
 
 
-    input_tensor = Variable(fixed_batch['z']).cuda()
-    g = Generator(nb_channels_first_layer, 512)
-    g.cuda()
-    g.train()
+import torch
+import torch.nn as nn
+from tensorboardX import SummaryWriter
+from torch.autograd import Variable
 
-    output = g.forward(input_tensor)
-    save_image(output[:16].data, 'temp.png', nrow=4)
+class LeNet(nn.Module):
+    def __init__(self):
+        super(LeNet, self).__init__()
+        self.conv1 = nn.Sequential(     #input_size=(1*28*28)
+            nn.Conv2d(1, 6, 5, 1, 2),
+            nn.ReLU(),      #(6*28*28)
+            nn.MaxPool2d(kernel_size=2, stride=2),  #output_size=(6*14*14)
+        )
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(6, 16, 5),
+            nn.ReLU(),      #(16*10*10)
+            nn.MaxPool2d(2, 2)  #output_size=(16*5*5)
+        )
+        self.fc1 = nn.Sequential(
+            nn.Linear(16 * 5 * 5, 120),
+            nn.ReLU()
+        )
+        self.fc2 = nn.Sequential(
+            nn.Linear(120, 84),
+            nn.ReLU()
+        )
+        self.fc3 = nn.Linear(84, 10)
+
+    # 定义前向传播过程，输入为x
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.conv2(x)
+        # nn.Linear()的输入输出都是维度为一的值，所以要把多维度的tensor展平成一维
+        x = x.view(x.size()[0], -1)
+        x = self.fc1(x)
+        x = self.fc2(x)
+        x = self.fc3(x)
+        return x
+
+dummy_input = Variable(torch.rand(13, 1, 28, 28)) #假设输入13张1*28*28的图片
+model = LeNet()
+with SummaryWriter(comment='LeNet') as w:
+    w.add_graph(model, (dummy_input, ))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# if __name__ == '__main__':
+#     dir_datasets = os.path.expanduser('/home/jains/datasets/gsndatasets')
+#     dataset = 'celebA_128_1k'
+#     dataset_attribute = '65536'
+#     embedding_attribute = 'ScatJ4_projected512_1norm'
+#
+#
+#     dir_x_train = os.path.join(dir_datasets, dataset, '{0}'.format(dataset_attribute))#原始图片文件夹
+#     dir_z_train = os.path.join(dir_datasets, dataset, '{0}_{1}'.format(dataset_attribute, embedding_attribute))#scatj4数据文件夹
+#
+#     dataset = EmbeddingsImagesDataset(dir_z_train, dir_x_train)
+#     fixed_dataloader = DataLoader(dataset, batch_size=2)
+#     fixed_batch = next(iter(fixed_dataloader))
+#
+#     nb_channels_first_layer = 32#第一层channel个数
+#
+#
+#     input_tensor = Variable(fixed_batch['z']).cuda()#tensor转换为view类型数据
+#     g = Generator(nb_channels_first_layer, 512)#
+#
+#     from tensorboardX import SummaryWriter
+#     with SummaryWriter(comment='Generator') as w:
+#         w.add_graph(g,(input_tensor))
+#
+#     # g.cuda()
+#     # g.train()
+#
+#     # output = g.forward(input_tensor)
+#     # save_image(output[:16].data, 'temp.png', nrow=4)#保存图片
